@@ -1,14 +1,14 @@
 Name:     ireal
 Version:  0.1
-cabal-version: >= 1.2
+cabal-version: >= 1.6
 Synopsis: Real numbers and intervals with not so inefficient exact arithmetic.
 Description: 
    This library provides a type IReal of real numbers and intervals with arbitrary precision arithmetic,
    instance declarations for the standard numeric classes, Eq and Ord (the two latter non-total for 
    computability reasons). Reasonably efficient in comparison with other Haskell modules for exact 
    real arithmetic. Does not depend on non-Haskell libraries.
-   The package includes a QuickCheck test suite, documentation, and a number of small example 
-   applications in validated numerics.
+   A QuickCheck test suite, documentation, and a number of small example 
+   applications in validated numerics are available at <https://github.com/sydow/ireal.git>.
 Category: Data, Math 
 Build-type: Simple
 Author: Björn von Sydow (bjorn.von.sydow@gmail.com)
@@ -31,10 +31,6 @@ Library
        Data.Number.IReal.FoldB
 
 source-repository head
-  type:     git
-  location: https://github.com/sydow/ireal.git
-
-source-repository this
   type:     git
   location: https://github.com/sydow/ireal.git
 
