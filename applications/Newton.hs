@@ -1,4 +1,4 @@
-module Newton where
+module Newton where 
 
 import Data.Number.IReal
 import FAD
