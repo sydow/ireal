@@ -9,7 +9,7 @@ Description:
    real arithmetic. Does not depend on non-Haskell libraries.
    The package includes a QuickCheck test suite, documentation, and a number of small example 
    applications in validated numerics.
-Category: Data, Math
+Category: Data, Math 
 Build-type: Simple
 Author: Björn von Sydow (bjorn.von.sydow@gmail.com)
 Maintainer: Björn von Sydow (bjorn.von.sydow@gmail.com)
