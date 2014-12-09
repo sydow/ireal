@@ -16,7 +16,7 @@ Maintainer: Björn von Sydow (bjorn.von.sydow@gmail.com)
 License:        BSD3
 License-file:   LICENSE
 Library
-  Build-depends:   base >=3 && < 5, 
+  Build-depends:   base >=3 && < 5,  
                    QuickCheck >= 2.4
   Exposed-modules: 
        Data.Number.IReal,
