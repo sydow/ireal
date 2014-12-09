@@ -39,7 +39,7 @@
 -- 'IReal' is also an instance of 'Eq' and 'Ord'; these are, however, non-total for computability reasons;
 -- evaluation of e.g.  @sin pi == 0@ at type 'IReal' will not terminate.
 --
--- The package includes a QuickCheck testsuite (in directory tests), a paper with documentation (in directory doc) and a number of 
+-- At the github site <https://github.com/sydow/ireal.git> one can find a QuickCheck testsuite (in directory tests), a paper with documentation (in directory doc) and a number of 
 -- small applications (in directory applications).
 module Data.Number.IReal (
   -- * The type of real numbers and intervals
