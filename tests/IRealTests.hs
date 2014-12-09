@@ -120,4 +120,4 @@ main = do
             ("    sin (2*x) = 2*sin x*cos x   ", prop_double)]
   putStrLn "Test the following identities up to 1e-200, for random non-zero numbers."
   mapM_ qc [("    log |x*y| = log |x|+log |y| ", prop_log_add)]
-  mapM_ qc [("    x * recip x = 1             ", prop_recip)]
+  mapM_ qc [("    x * recip x = 1             ", prop_recip)] 
