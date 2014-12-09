@@ -1,0 +1,31 @@
+Name:     ireal
+Version:  0.1
+cabal-version: >= 1.2
+Synopsis: Real numbers and intervals with not so inefficient exact arithmetic.
+Description: 
+   This library provides a type IReal of real numbers and intervals with arbitrary precision arithmetic,
+   instance declarations for the standard numeric classes, Eq and Ord (the two latter non-total for 
+   computability reasons). Reasonably efficient in comparison with other Haskell modules for exact 
+   real arithmetic. Does not depend on non-Haskell libraries.
+   The package includes a QuickCheck test suite, documentation, and a number of small example 
+   applications in validated numerics.
+Category: Data, Math
+Build-type: Simple
+Author: Björn von Sydow (bjorn.von.sydow@gmail.com)
+Maintainer: Björn von Sydow (bjorn.von.sydow@gmail.com)
+License:        BSD3
+License-file:   LICENSE
+Library
+  Build-depends:   base >=3 && < 5, 
+                   QuickCheck >= 2.4
+  Exposed-modules: 
+       Data.Number.IReal,
+       Data.Number.IReal.IReal,
+       Data.Number.IReal.Powers,
+       Data.Number.IReal.IntegerInterval,
+       Data.Number.IReal.Scalable,
+       Data.Number.IReal.UnsafeMemo,
+       Data.Number.IReal.IRealOperations,
+       Data.Number.IReal.Generators,
+       Data.Number.IReal.Auxiliary,
+       Data.Number.IReal.FoldB
