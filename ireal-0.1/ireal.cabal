@@ -29,3 +29,12 @@ Library
        Data.Number.IReal.Generators,
        Data.Number.IReal.Auxiliary,
        Data.Number.IReal.FoldB
+
+source-repository head
+  type:     git
+  location: https://github.com/sydow/ireal.git
+
+source-repository this
+  type:     git
+  location: https://github.com/sydow/ireal.git
+
