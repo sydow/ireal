@@ -1,10 +1,9 @@
 module Taylor where 
 
 import Data.Number.IReal
-import FAD
 
-facs :: (Fractional a, Enum a) => [a]
-facs = scanl (*) 1 [1..]
+facs :: (Fractional a, Num a) => [a]
+facs = scanl (*) 1 (map fromInteger [1..])
 
 generalTerms h = zipWith (/) (iterate (*h) 1) facs
 

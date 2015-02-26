@@ -5,7 +5,6 @@ import Data.Number.IReal.IReal
 import Data.Number.IReal.IntegerInterval
 import LinAlg
 import Newton
-import FAD
 import Integrals
 import Erf
 
@@ -18,12 +17,15 @@ have published correct solutions we can check our results against.
 
 Timings are from running ghci 7.8.3 on a 2.5 Ghz MacBook Pro.
 
-Each of the 16 problems has a simpler and a harder version. The results with our package are as follows:
+Each of the 16 problems has a simpler and a harder version. The results with our package are as follows (see below for improved results):
 - We can solve both versions of problems 2, 3, 6, 8, 9, 12 and 14.
 - We can solve the simpler versions of problems 1, 7, 11, 13 and 16, but the harder versions are out of reach, for excessive memory or time requirements
 - Problems 4 and 5 concern two special functions, the zeta and gamma functions. We have not implemented these and, consequently, cannot solve these problems.
 - Problem 10 is a linear algebra problem requiring inverting a matrix (of size 80x80 for the simpler problem). Our simple-minded linear algebra module cannot invert matrices larger than ca 40x40.
 - Problem 15 is an integral with a heavily oscillating integrand. We can get the correct result for the simpler problem using Clenshaw-Curtis quadrature, but with a shaky error analysis based on noting that the results for 512 and 1024 points agree to the required number of decimals, and thus the common result is probably correct. We do not consider that a satisfactory solution.
+
+Addendum February 9, 2015: See file MoreDigitsRounded.hs for solutions to the harder versions of problems 15 and 16 using the new module Data.Number.IReal.Rounded.
+
 -}
 
 -- Auxiliary stream of pseudo-random integers used in several problems below
@@ -40,7 +42,7 @@ p1 15000 123456 10000 1000
 1.002516460709654427070669458074954176353693511207522646674439914525351574088850747808768859
 ...
 90067298469713697479049799670230992994517233320216647880388126823764450957720301326122793745235802
-(1.51 secs, 792957056 bytes)
+(1.84 secs, 944380208 bytes)
 
 We have no specialized implementation of nth roots, so the harder problem is far beyond reach. An implementation of nthRoot along the lines of sqrt would probaby handle this problem well.
 -}
@@ -60,7 +62,7 @@ p2 50000 2348 11
 2.677658027419916799656791778743205279006831584447909394138911371168661727256596447351001419-
 ...
 0028465996312865188159383181798097287773457362
-(10.77 secs, 4024283880 bytes)
+(11.63 secs, 5915475144 bytes)
 
 -}
 
@@ -95,7 +97,7 @@ p6 30000 1512 1000
 0.8419822444250350722500465556032049076535282226505613076319708107454641865199854581422396
 ...
 97379590474161895111388647662559
-(5.63 secs, 4348040864 bytes)
+(5.09 secs, 1769452000 bytes)
 
 -}
 
@@ -126,7 +128,7 @@ p8 16 12344 5000 2
 
 p8 150 12384 100000 10
 63837.783124646381213503757555288914770713872985612438616744139740933585253689694540737815815402040378950007180540637644340700133080182949505340280227608713
-(24.91 secs, 22127028232 bytes)
+(8.51 secs, 9719354792 bytes)
 
 -}
 
@@ -185,7 +187,7 @@ p12 11 24905 1000
 
 p12 11 14905 200000
 -0.80338154922
-(34.80 secs, 41422048200 bytes)
+(11.55 secs, 9981154672 bytes)
 
 -}
 
@@ -218,7 +220,7 @@ p14 20000 1234 4321
 1372.607407915898039275620096163136526889749503325903743299297616743666337996084985896175294
 ...
 89660209714061591467119432351273335633380
-(13.23 secs, 5184788912 bytes)
+(14.95 secs, 5790678848 bytes)
 
 -}
 
@@ -242,6 +244,6 @@ p16 n a b c = deriv c f (recip (sqrt a)) ?? n
 
 p16 20 3210 5432 30
 -1.19844645066450855152e74
-(1.28 secs, 885937440 bytes)
+(1.20 secs, 811510936 bytes)
 
 -}

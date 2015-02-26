@@ -1,25 +1,30 @@
-module FAD where
+-- | Simple forward automatic differentiation. The main reason for supplying this
+-- module rather than using one of several similar alternatives available on Hackage 
+-- is that they all seem to use the following implementation of differentiation of 
+-- products (in our notation):
+--
+-- x * y = mkDif (val x * val y) (df 1 x * y + x * df 1 y)
+--
+-- This is elegant but exponential in the order of differentiation, and hence
+-- unsuitable for much of validated numerics, which often uses moderately high
+-- order derivatives. 
+--
+-- In our implementation, high order derivatives are still slow, but not as bad.
+-- Derivatives of order several hundred can be handled, but in type 'Double' this is often
+-- useless; rounding errors dominate the result. In type 'IReal', results are reliable, but the
+-- deep nesting of the resulting expressions may lead to excessive precision requirements. Often
+-- 'Data.Number.IReal.Rounded' is preferrable from an efficiency point of view.
+-- 
+-- No attempt is made to handle functions of several variables
 
-import Data.Number.IReal
+module Data.Number.IReal.FAD where
+
+import Data.Number.IReal.Scalable
 import Data.Number.IReal.Powers
--- import ListNumSyntax
 
-{- 
-
-Simple forward automatic differentiation. The main reason for supplying this
-module rather than using one of several similar alternatives available on Hackage 
-is that they all seem to use the following implementation of differentiation of 
-products (in our notation):
-
-x * y = mkDif (val x * val y) (df 1 x * y + x * df 1 y)
-
-This is elegant but exponential in the order of differentiation, and hence
-unsuitable for much of validated numerics, which often uses moderately high
-order derivatives. 
-
-In our implementation, high order derivatives are still slow, but not as bad.
-
--}
+-- | A 'Dif' value is an infinite list consisting of the values of an infinitely differentiable
+-- function and all its derivatives, all evaluated at a common point. Polynomials are represented
+-- by finite lists, omitting zero derivatives.
 
 newtype Dif a = D [a] deriving Show
 
@@ -49,9 +54,11 @@ unDif f = val . f . var
 df :: Int -> Dif a -> Dif a
 df n (D xs) = D (drop n xs)
 
+-- | deriv n f is the n'th derivative of f (with derivative information omitted)
 deriv :: (Num a, Num b) => Int -> (Dif a -> Dif b) -> a -> b
 deriv n f = unDif (df n . f)
 
+-- | derivs f a is the list of allderivatives of f, evaluated at a.
 derivs :: (Num a, Num b) => (Dif a -> Dif b) -> a -> [b]
 derivs f = fromDif . f . var
 

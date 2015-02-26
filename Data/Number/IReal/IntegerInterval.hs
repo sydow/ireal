@@ -16,7 +16,7 @@ lowerI (I (l,_)) = l
 upperI (I (_,u)) = u
 
 isThin :: IntegerInterval -> Bool
-isThin x = radI x == 1
+isThin (I (l,u)) = u == l+2
 
 ivalCase :: IntegerInterval -> a -> a -> a -> a
 ivalCase (I (l,u)) pos neg zer
@@ -26,7 +26,9 @@ ivalCase (I (l,u)) pos neg zer
 
 instance Num IntegerInterval where
   I (l1,u1) + I (l2,u2) = I (l1+l2,u1+u2)
-  i1@(I (l1,u1)) * i2@(I (l2,u2)) = 
+  i1@(I (l1,u1)) * i2@(I (l2,u2)) =
+   -- |isThin i1 && isThin i2 = fromInteger (midI i1 * midI i2)
+  --  | otherwise = 
      ivalCase i1
        (f (l1*l2,u1*u2) (u1*l2,l1*u2) (u1*l2,u1*u2))
        (f (l1*u2,u1*l2) (u1*u2,l1*l2) (l1*u2,l1*l2))

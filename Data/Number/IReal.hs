@@ -48,6 +48,7 @@ module Data.Number.IReal (
   -- * Printing 'IReal's 
   (?),
   (??),
+  showIReal,
   -- * Total comparison operators
   (<!),
   (>!),
@@ -72,6 +73,14 @@ module Data.Number.IReal (
   foldb',
   isumN',
   isum',
+  -- * Automatic Differentiation
+  Dif(..),
+  deriv,
+  derivs,
+  con,
+  var,
+  unDif,
+  val,
   -- * QuickCheck support
   -- ** Generators
   uniformNum,
@@ -98,5 +107,6 @@ import Data.Number.IReal.IRealOperations
 import Data.Number.IReal.Generators
 import Data.Number.IReal.Auxiliary
 import Data.Number.IReal.FoldB
+import Data.Number.IReal.FAD
 
 

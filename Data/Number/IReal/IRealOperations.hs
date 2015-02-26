@@ -101,7 +101,7 @@ instance Floating IReal where
   sqrt x           = ir f
     where 
        f p
-         |midI xp < radI xp  = error "IReal.sqrt: negative argument"
+         |lowerI xp < 0  = error "IReal.sqrt: negative argument"
          |isThin xp     = fromInteger u
          |otherwise     = l `upto` u
           where (xp,q) = head [(xq,q) | q <- iterate (*2) (max 1 (2*p)), 
@@ -119,51 +119,51 @@ instance Floating IReal where
                    = log (lower x) -+- log (upper x)
      |r < 0        = error "IReal.log: negative argument"      --  x < 0
      |r < 2        = -log (recip x)                            -- -0.5 < x < 1. 
-     |r < 10       = scale (y * g0 (sq y)) 1                    -- 0.5 < x < 5
+     |r == 2       = powerSeries ack 2 id (x-1) - 1             -- 0.5 < x < 1.5
+     |r < 10       = scale (log0 y) 1                           -- 1 < x < 5; hence 0 < y < 2/3. 
      |otherwise    = log (scale x (-n)) + log2 * fromIntegral n
       where x1     = appr x 1
             r      = midI x1
-            n      = lg2 r
+            n      = lg2 r - 1
             y      = 1 - scale (recip (x+1)) 1
+            log0 x = x * g0 (sq x)                              -- log0 used only for positive x, so does not lose interval
+                                                                -- precision in spite of multiplication (g0 . sq positive, increasing)
+            ack a 1 = a
+            ack a n = - a * (n-1) `div` n
 
-  exp x
-    |isThin x0     = scale (powerSeries div 2 id s) (fromInteger n) 
-    |otherwise     = exp (lower x) -+- exp (upper x)    
+  exp x            = scale (powerSeries div 2 id s) (fromInteger n) 
        where x0    = appr (x * recip log2) 0
              n     = midI x0
              s     = x - fromInteger n * log2
 
-  atan x                              -- interval values lose precision for intervals with rad < 2^(-100)
-     |not (isThin (appr x 100))
-                   = atan (lower x) -+- atan (upper x)
-     |r < 0        = - atan (-x)
-     |r > 8        = halfPi - atan0 (recip x)                         --  x > 2           atan0 y for 0 < y < 0.5
-     |r > 1        = quarterPi + atan0 (1 - scale (recip (x+1)) 1)    --  0.25 < x < 2    atan0 y for -3/5 < y < 1/3
-     |otherwise    = atan0 x                                          --  r = 0 or 1      -0.25 < x < 0.5
-     where r       = midI (appr x 2)
-           atan0 x = x * g0 (negate (sq x))                          -- converges for |x| < 1/sqrt 2
+  atan x = ir f 
+    where f p
+           | isThin i  = appr (atan' x) p 
+           | otherwise = lowerI (appr (atan' (scale (fromInteger l) (-p))) p) `upto` 
+                         upperI (appr (atan' (scale (fromInteger u) (-p))) p)
+             where i@(I (l,u)) = appr x p
+  -- We cannot avoid losing precision in intervals with atan' (because of the two occurrences of x in atan0).
+  -- Hence the function above, which treats intervals, using that atan is strictly increasing and has
+  -- derivative at most 1. atan' is used for end points (and thin intervals).
+          atan' x                            
+           | r < 0        = - atan' (-x)                                     --  x < 0
+           | r > 8        = halfPi - atan0 (recip x)                         --  x > 2             atan0 y for 0 < y < 0.5
+           | r > 1        = quarterPi + atan0 (1 - scale (recip (x+1)) 1)    --  0.25 < x < 2.25   atan0 y for -3/5 < y < 5/13
+           | otherwise    = atan0 x                                          --  r = 0 or 1        -0.25 < x < 0.5
+            where x2      = appr x 2
+                  r       = midI x2 
+                  atan0 x = x * g0 (negate (sq x))                          -- converges for |x| < 1/sqrt 2
+
 
   cos x
-     |ar > 5       = if even n then cos (x - npi) else -cos (x - npi)
-     |not (isThin x100)    
-                   = ival (abs x) x100              -- we have |mid x| < 3 
-     |ar > 1       = scale (sq c2) 1 - 1
-     |otherwise    = powerSeries (\ a n -> -a `div` (2*n*(2*n-1))) 1 (`div` 2) (sq x)
-      where 
-            x100   = appr x 100
-            r      = midI (appr x 1)
-            ar     = abs r
-            n      = r `div` 6
-            npi    = pi * fromIntegral n
-            c2     = cos (scale (abs x) (-1))
-            ival x xp  -- 0 <= mid x < 3.
-              |a > piScaled     = (-1) -+- 1
-              |a > m            = (if m+a > piScaled then -1 else cos (upper x)) -+- 1
-              |m + a < piScaled = cos (upper x) -+- cos (lower x)
-              |otherwise = (-1) -+- cos (lower x)
-              where piScaled = 3982441812995697363688351113952 -- floor (pi*2^100)
-                    m = abs (midI xp)
-                    a = radI xp
+    | rad x >! pi `atDecimals` 2 = 0 +- 1
+    | otherwise = if even n then cos0 y else -cos0 y
+   where n = midI (appr (x/pi) 0)
+         y = abs (x - pi * fromInteger n)  
+         -- upper y < 2*pi, so by scaling with (-1) we get into 
+         -- a region where cos is monotonic.
+         cos0 x = f (powerSeries (\a n -> -a `div` (2*n*(2*n-1))) 1 (`div` 2) (sq (scale x (-1))))
+         f x = scale (sq x) 1 - 1          
 
   sin x            = cos (halfPi - x) 
 
@@ -171,7 +171,7 @@ instance Floating IReal where
   acos x           = halfPi - asin x
   sinh x           = scale (y - recip y) (-1) where y = exp x
   cosh x           = sqrt (1 + sq (sinh x))
-  tanh x           = 1 - scale (recip (y + 1)) 1 where y = exp (scale x 1)
+  tanh x           = 1 - scale (recip (y + 1)) 1 where y = sq (exp x)
   asinh x          = log (x + sqrt (sq x + 1))
   acosh x          = log (x + sqrt (sq x - 1))
   atanh x          = scale (log (scale (recip (1-x)) 1 - 1)) (-1)
@@ -289,12 +289,11 @@ showIReal d x =
       EQ -> if isThin x0 then show (midI x0) else show (midI x0) ++ " +- " ++ show (radI x0)
         where x0 = appr x 0
       LT -> error "IReal.? : second argument negative"
-      GT| isThin xd -> concat (f (midI xd))
-        | l==u -> concat l
+      GT| l==u -> concat l
         | s==s1 && is==is1 -> s ++ is ++ take n fs ++ 
                               "[| " ++ take 10 (drop n fs) ++ " .. " ++ take 10 (drop n fs1) ++ " |]"
         | otherwise -> "[| " ++ s ++ is ++ tryInt (take 11 fs) ++ " .. " ++ s1 ++ is1 ++ tryInt(take 11 fs1) ++ " |]"
-    where xd = appr (scale (x*5^d) d) 0
+    where xd = appr (scale (x*fromInteger (5^d)) d) 0
           tryInt "" = ""
           tryInt fs =  if (all (=='0') (tail fs)) then "" else fs
           f m = [s, is, tryInt ('.':fs)]
@@ -303,8 +302,8 @@ showIReal d x =
              (s,ds') = if head ds == '-' then ("-",tail ds) else ("",ds)
              miss = d - length ds'  
              (is,fs) = if miss >= 0 then ("0",replicate miss '0' ++ ds') else splitAt (-miss) ds'
-          l@[s,is,fs]    = f (lowerI xd) 
-          u@[s1,is1,fs1] = f (upperI xd) 
+          l@[s,is,fs]    = f (lowerI xd+1) 
+          u@[s1,is1,fs1] = f (upperI xd-1) 
           n = length (takeWhile id (zipWith (==) fs fs1))
 
 -- | IReal is an instance of 'Show' but it should be avoided; see introduction. 

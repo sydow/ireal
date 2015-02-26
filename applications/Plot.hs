@@ -28,9 +28,9 @@ clear :: IO ()
 clear = plotCmd "clear"
 
 
-plotData :: (Num a, Show a) => [[String]] -> a -> a -> IO ()
+plotData :: [[String]] -> String -> String -> IO ()
 plotData   [] _ _ = clear
-plotData   fss a b = plotCmd ("clear\nplot [" ++ show a ++ ":" ++ show b 
+plotData   fss a b = plotCmd ("clear\nplot [" ++ a ++ ":" ++ b 
                      ++ "] '-' w l t \"0\"" 
                      ++ concatMap h [1..length fss-1] ++ "\n" ++ concatMap p fss)
    where h n = "  ,'' w l t " ++ show (show n)
@@ -43,7 +43,7 @@ class Plottable a where
 data FI a = FI (a -> a) a a
 
 instance  (Fractional a, Show a) => Plottable (FI a) where 
-  plot fs@(f : _) = plotData (map p fs) a b
+  plot fs@(f : _) = plotData (map p fs) (show a) (show b)
     where FI _ a b = f
           p (FI f a b) = map mkLine [0..500]
                   where mkLine n = show x ++ " " ++ show (f x)
