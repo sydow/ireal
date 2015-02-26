@@ -4,8 +4,33 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 -- | This module uses type-level literals to provide
--- types 'Rounded <lit>' where <lit> is a positive integer literal. 
--- To use this in ghci you must @:set -XDataKinds@. 
+-- types 'Rounded' /lit/ where /lit/ is a positive integer literal. 
+-- Values of this type are 'IReal's where (sub-)expressions are computed
+-- with a precision of at most /lit/ decimals. This is very different from 
+-- multi-precision floating point numbers; 'Rounded' values are intervals,
+-- indicating the precision in the computed result.
+--
+-- To use this module in ghci you must @:set -XDataKinds@. Example usage:
+--
+-- >>> import Data.Number.IReal.FAD 
+-- >>> import Data.Number.IReal.Rounded
+-- >>> let f x = cos x * cos (2*x) + sin x * sin (2 * x)
+-- >>> :set +s
+-- >>> :set -XDataKinds
+-- >>> (deriv 200 f 1 :: Rounded 120) ? 40
+-- 0.54030230586813971740[| 0803811043 .. 1069403842 |]
+-- (0.13 secs, 114501688 bytes)
+-- >>> (deriv 200 f 1 :: Rounded 150) ? 40
+-- 0.5403023058681397174009366074429766037324
+-- (0.13 secs, 120063280 bytes)
+--
+-- Note that function f is in fact an obfuscated version of the cosine function, using a trigonometric identity
+--  on cos (2x - x). So we can check the result, but the derivatives are computed using the rules for differentiation. 
+--
+-- We compute the 200'th  derivative of f, evaluated at 1 (i.e., cos 1) with 40 significant digits. First we try 
+-- to do this at type Rounded 120, i.e. with 120 decimals in all intermediate computations. As we see, this is not 
+-- precision enough; we get as result an interval of width circa 2e-22. Redoing it at type Rounded 150 gives 
+-- sufficient precision. 
 module Data.Number.IReal.Rounded where
 
 import GHC.TypeLits
