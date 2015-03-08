@@ -1,3 +1,6 @@
+version 0.2.1:
+- Fixed bug in function convs in module Data.Number.IReal.FAD, which caused calls of derivs f e to become unproductive after a few derivatives when f involves sqrt, recip and tan.
+
 version 0.2:
 - Following advice received, changed the description in the synopsis "with not too inefficient exact arithmetic" to "with relatively efficient exact arithmetic", since our package is significantly faster than any other Haskell package we are aware of (but significantly slower than the best C/C++ packages).
 

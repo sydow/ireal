@@ -94,7 +94,7 @@ instance  Num a => Num (Dif a) where
    fromInteger  = con . fromInteger
 
 instance (Fractional a, Powers a) => Fractional (Dif a) where
-   recip g      = r where r = mkDif (recip (val g)) (-df 1 g * sq r)
+   recip        = rchain recip (negate . sq)
    fromRational = con . fromRational
 
 instance (Floating a, Powers a) => Floating (Dif a) where 
@@ -115,7 +115,6 @@ instance (Floating a, Powers a) => Floating (Dif a) where
    atanh    = chain atanh (recip . (1-) . sq) 
 
 instance (Num a, Powers a) => Powers (Dif a) where
-   sq       = chain sq (2*)
    pow x 0  = con 1
    pow x n  = chain (flip pow n) ((fromIntegral n *) . flip pow (n-1)) x 
    -- Note: This is linear in n, but behaves correctly on intervals
@@ -146,12 +145,14 @@ instance ( Powers a, RealFloat a) => RealFloat (Dif a) where
     encodeFloat m e = con (encodeFloat m e)
 
 -- convs xs ys = [ sum [xs!!j * ys!!(k-j)*bin k j | j <- [0..k]] | k <- [0..]]
--- adapted for efficiency and to to handle finite lists xs, ys 
+-- adapted for efficiency and to handle finite lists xs, ys 
 convs [] _ = []
 convs (a:as) bs = convs' [1] [a] as bs
   where convs' _ _ _ [] = []
-        convs' ps ars [] bs = sumProd3 ps ars bs : convs'' (next' ps) ars bs
-        convs' ps ars (a:as) bs = sumProd3 ps ars bs : convs' (next ps) (a:ars) as bs
+        convs' ps ars as bs = sumProd3 ps ars bs : 
+              case as of
+                 [] -> convs'' (next' ps) ars bs
+                 a:as -> convs' (next ps) (a:ars) as bs
         convs'' ps ars [_] = []
         convs'' ps ars (_:bs) = sumProd3 ps ars bs : convs'' (next' ps) ars bs
         next xs = 1 : zipWith (+) xs (tail xs) ++ [1] -- next row in Pascal's triangle

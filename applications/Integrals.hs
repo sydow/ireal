@@ -8,13 +8,11 @@ integral k d f i = try eps i
    eps = 10 ^^ (-d)
    evens (x:_:xs) = x : evens xs
    try eps i
-    -- |trace (show i ++ ": w=" ++show w) False = undefined
      | w < eps =  approx + ((-w) -+- w)
      | otherwise = try eps2 (lower i -+- m) + try eps2 (m -+- upper i)
          where  eps2 = scale eps (-1)
                 m = mid i
                 approx = 2 * sum (take (k `div` 2 + 1) (evens (zipWith (*) ts rs)))
-                -- w =  upper (abs (prec d $ (derivs f i!!k)/(facs!!k) - ts!!k)) * rs!!k * 2
                 w =  upper (abs (prec d $ (ts2!!k - ts!!k))) * rs!!k * 2
                 ts = taylorCoeffs f m
                 ts2 = taylorCoeffs f i

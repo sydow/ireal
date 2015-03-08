@@ -3,7 +3,7 @@ module Taylor where
 import Data.Number.IReal
 
 facs :: (Fractional a, Num a) => [a]
-facs = scanl (*) 1 (map fromInteger [1..])
+facs = map fromInteger (scanl (*) 1 [1..])
 
 generalTerms h = zipWith (/) (iterate (*h) 1) facs
 
