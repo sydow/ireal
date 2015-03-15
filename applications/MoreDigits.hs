@@ -24,7 +24,7 @@ Each of the 16 problems has a simpler and a harder version. The results with our
 - Problem 10 is a linear algebra problem requiring inverting a matrix (of size 80x80 for the simpler problem). Our simple-minded linear algebra module cannot invert matrices larger than ca 40x40.
 - Problem 15 is an integral with a heavily oscillating integrand. We can get the correct result for the simpler problem using Clenshaw-Curtis quadrature, but with a shaky error analysis based on noting that the results for 512 and 1024 points agree to the required number of decimals, and thus the common result is probably correct. We do not consider that a satisfactory solution.
 
-Addendum February 9, 2015: See file MoreDigitsRounded.hs for solutions to the harder versions of problems 15 and 16 using the new module Data.Number.IReal.Rounded.
+Addendum March 14, 2015: See file MoreDigitsRounded.hs for solutions to the harder versions of problems 10, 13, 15 and 16 using the new module Data.Number.IReal.Rounded.
 
 -}
 
@@ -152,7 +152,7 @@ Remark: This is not entirely satisfactory. The successive values in the logistic
 But also the problem itself is dubious, since it involves the < relation, which is not computable. Of course, the organizers made sure that no x_n is exactly 0.5, but anyhow...
 -}
 
-p10 n s a = bsum (map (bsum . map abs) inv) ?? n
+p10 n s a = bsum (map (bsum . map abs) inv) 
   where cs = map fromInteger (chi s)
         mat = take a (group a cs)
         group a xs = take a xs : group a (drop a xs)

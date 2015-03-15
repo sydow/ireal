@@ -15,7 +15,7 @@
 -- deep nesting of the resulting expressions may lead to excessive precision requirements. Often
 -- 'Data.Number.IReal.Rounded' is preferrable from an efficiency point of view.
 -- 
--- No attempt is made to handle functions of several variables
+-- No attempt is made to handle functions of several variables or perturbation confusion.
 
 module Data.Number.IReal.FAD where
 

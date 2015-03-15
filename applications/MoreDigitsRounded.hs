@@ -1,14 +1,59 @@
 module MoreDigitsRounded where
 
 import Data.Number.IReal.Rounded
+import Data.Number.IReal (bsum,scale)
 import Data.Number.IReal.FAD
 import ClenshawRounded
+import LinAlg
 
 
 {-
 
-This file contains solutions to the harder versions of problems 15 and 16 in the MoreDigits competition. See file MoreDigits.hs for the other problems. Probably some of these can be solved faster with module Data.Number.IReal.Rounded, but we haven't tried.
+This file contains solutions to the harder versions of problems 10, 15 and 16 in the MoreDigits competition. See file MoreDigits.hs for the other problems. Probably some of these can be solved faster with module Data.Number.IReal.Rounded, but we haven't tried.
 
+-}
+
+chi :: Integer -> [Integer]
+chi s = tail (iterate f s)
+  where f s = (69069 * s + 3) `mod` 2^31
+
+
+p10 n s a = bsum (map (bsum . map abs) inv) 
+  where cs = map fromInteger (chi s)
+        mat = take a (group a cs)
+        group a xs = take a xs : group a (drop a xs)
+        inv = inverse mat
+
+{-
+
+ (p10 10 12165 80 :: Rounded 90) ?? 10
+0.7880687075e-6
+(7.62 secs, 7416272616 bytes)
+
+(p10 10 12385 250 :: Rounded 200) ?? 10
+0.5297164525e-5
+(282.02 secs, 252926826520 bytes)
+
+-}
+
+p13 n s a b = bsum (zipWith3 (\a b c -> a*b/c) as bs cs) 
+  where as = take (n `div` 2) (map (\x -> fromInteger x - scale 1 30) (chi s))
+        bs = tail (iterate (* sqrt (a/b)) 1)
+        cs = map fromInteger (scanl (*) 1 [2..])
+
+{-
+
+(p13 2000 102348 9999 1001 :: Rounded 3000) ?? 1999
+1.31489756277794471631075695314502721054705019914426594090130698824938119110137
+...
+096037221926209702149402897608454262629229624730552707920e10
+(0.19 secs, 95604096 bytes)
+
+(p13 20000 102317 999999 1001 :: Rounded 35000) ?? 20000
+0.8321021150455468552974202017116086110
+...
+636210307261174886399423816332873222e22
+(50.18 secs, 9929549512 bytes)
 -}
 
 p15 k a b c = quad  (\x -> sin (a * cos (b*x+c))) (cpss!!k) (wss!!k) 
