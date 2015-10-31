@@ -1,3 +1,5 @@
+{-# LANGUAGE DataKinds #-}
+
 module MoreDigitsRounded where
 
 import Data.Number.IReal.Rounded
@@ -9,14 +11,13 @@ import LinAlg
 
 {-
 
-This file contains solutions to the harder versions of problems 10, 15 and 16 in the MoreDigits competition. See file MoreDigits.hs for the other problems. Probably some of these can be solved faster with module Data.Number.IReal.Rounded, but we haven't tried.
+This file contains solutions to the harder versions of problems 10, 13, 15 and 16 in the MoreDigits competition. See file MoreDigits.hs for the other problems. Probably some of these can be solved faster with module Data.Number.IReal.Rounded, but we haven't tried.
 
 -}
 
 chi :: Integer -> [Integer]
 chi s = tail (iterate f s)
   where f s = (69069 * s + 3) `mod` 2^31
-
 
 p10 n s a = bsum (map (bsum . map abs) inv) 
   where cs = map fromInteger (chi s)

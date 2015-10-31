@@ -18,8 +18,8 @@ have published correct solutions we can check our results against.
 Timings are from running ghci 7.8.3 on a 2.5 Ghz MacBook Pro.
 
 Each of the 16 problems has a simpler and a harder version. The results with our package are as follows (see below for improved results):
-- We can solve both versions of problems 2, 3, 6, 8, 9, 12 and 14.
-- We can solve the simpler versions of problems 1, 7, 11, 13 and 16, but the harder versions are out of reach, for excessive memory or time requirements
+- We can solve both versions of problems 2, 3, 6, 7, 8, 9, 12 and 14.
+- We can solve the simpler versions of problems 1, 11, 13 and 16, but the harder versions are out of reach, for excessive memory or time requirements
 - Problems 4 and 5 concern two special functions, the zeta and gamma functions. We have not implemented these and, consequently, cannot solve these problems.
 - Problem 10 is a linear algebra problem requiring inverting a matrix (of size 80x80 for the simpler problem). Our simple-minded linear algebra module cannot invert matrices larger than ca 40x40.
 - Problem 15 is an integral with a heavily oscillating integrand. We can get the correct result for the simpler problem using Clenshaw-Curtis quadrature, but with a shaky error analysis based on noting that the results for 512 and 1024 points agree to the required number of decimals, and thus the common result is probably correct. We do not consider that a satisfactory solution.
@@ -115,7 +115,12 @@ p7 15 12314 2000000
 
 Note that the latter is *not* the harder problem; that has 100 times more terms!! 
 
-Some improvement possible by prec-restricting the terms, but it seems not to cut time by more than a third.
+On the other hand, the required precision for the harder problem is only five significant digits, 
+so we can actually work in type Double to solve the problem! Compiling and running 
+
+main = print (sum (take 200000000 (map (recip . fromIntegral) (chi 12314))))
+
+we get the output 1.9378131134366972 in ca 16 seconds.  (This seems a bit too much for ghci)
 -}
 
 p8 n s a b = bsum [prec (n + 10) $ abs (sin (fromInteger k/b)) | k <- take a (chi s) ] ? n
