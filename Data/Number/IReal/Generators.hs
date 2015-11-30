@@ -6,7 +6,7 @@ import Data.Number.IReal.IntegerInterval
 import Data.Number.IReal.Scalable (scale)
 import Data.Number.IReal.Auxiliary (atDecimals)
 
-import Test.QuickCheck
+import Test.QuickCheck hiding (scale)
 import Data.Bits (bit)
 import Control.Monad (liftM, liftM2)
 
