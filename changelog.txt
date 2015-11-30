@@ -1,3 +1,6 @@
+version 0.2.3:
+- Fixed bug causing Haskell comment to be inadvertently interpreted as Haddock annotation.
+
 version 0.2.2:
 - Handled name clash for name "scale" which is exported by Test.QuickCheck from version 2.8. 
 
