@@ -1,6 +1,6 @@
 module Data.Number.IReal.Auxiliary where
 
-import GHC.Float
+import GHC.Num
 
 infix 1 `atDecimals` 
 
@@ -8,7 +8,7 @@ infix 1 `atDecimals`
 
 -- | Base 2 logarithm of argument, rounded downwards.
 lg2 :: Integer -> Int
-lg2 = GHC.Float.integerLogBase 2
+lg2 = fromIntegral . GHC.Num.integerLogBase 2
 
 -- | Converts precisions from decimal to binary.
 dec2bits ::  Int -> Int
